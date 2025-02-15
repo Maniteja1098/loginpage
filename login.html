@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            width: 300px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px #ccc;
+            border-radius: 10px;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background: blue;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 id="formTitle">Login</h2>
+        <input type="text" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleAuth()">Login</button>
+        <p id="toggleText">Don't have an account? <a href="#" onclick="toggleForm()">Signup</a></p>
+    </div>
+
+    <script>
+        let isSignup = false;
+        const scriptURL = "YOUR_GOOGLE_APPS_SCRIPT_URL"; // Replace with your actual script URL
+
+        function toggleForm() {
+            isSignup = !isSignup;
+            document.getElementById("formTitle").innerText = isSignup ? "Signup" : "Login";
+            document.getElementById("toggleText").innerHTML = isSignup ? 
+                'Already have an account? <a href="#" onclick="toggleForm()">Login</a>' :
+                'Don\'t have an account? <a href="#" onclick="toggleForm()">Signup</a>';
+        }
+
+        function handleAuth() {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let action = isSignup ? "signup" : "login";
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify({ action, email, password }),
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes("Token")) {
+                    localStorage.setItem("jwtToken", data);
+                    alert("Login Successful!");
+                    window.location.href = "YOUR_BLOGGER_SITE_URL"; // Redirect to Blogger
+                } else {
+                    alert(data);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+
+</body>
+</html>
